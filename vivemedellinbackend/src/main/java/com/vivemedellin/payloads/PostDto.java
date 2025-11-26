@@ -18,7 +18,6 @@ public class PostDto {
     private String postTitle;
     private String content;
     private String imageName;
-
     private String imageUrl;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Kolkata")
@@ -27,5 +26,5 @@ public class PostDto {
     private UserResponseDto user;
     private CategoryDto category;
 
-    private Set<CommentDto> comments = new HashSet<>();
+    private final Set<CommentDto> comments = new HashSet<>();
 }

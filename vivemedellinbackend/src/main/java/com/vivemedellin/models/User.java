@@ -1,22 +1,23 @@
 package com.vivemedellin.models;
 
 import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
 @Getter
 @Setter
-public class User{
+public class User {
 
-    public User(String name, String email, String password, String about){
+    public User(String name, String email, String password, String about) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -28,23 +29,23 @@ public class User{
     private Integer id;
 
     @Column(name = "user_name", nullable = false, length = 100)
-    private String name;
+    private final String name;
 
     @Column(unique = true, nullable = false)
-    private String email;
+    private final String email;
 
-    private String password;
-    private String about;
+    private final String password;
+    private final String about;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Post> posts = new ArrayList<>();
+    private final List<Post> posts = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Comment> comments = new ArrayList<>();
+    private final List<Comment> comments = new ArrayList<>();
 
     // Roles mapping
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
-    private Set<Role> roles = new HashSet<>();
+    private final Set<Role> roles = new HashSet<>();
 
 }

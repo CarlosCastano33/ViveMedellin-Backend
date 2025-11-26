@@ -21,14 +21,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiResponse> resourceNotFoundExceptionHandler(ResourceNotFoundException ex){
+    public ResponseEntity<ApiResponse> resourceNotFoundExceptionHandler(ResourceNotFoundException ex) {
         String message = ex.getMessage();
         ApiResponse apiResponse = new ApiResponse(message, false);
         return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String >> handleMethodArgsNotValidException(MethodArgumentNotValidException ex){
+    public ResponseEntity<Map<String, String>> handleMethodArgsNotValidException(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
 
         ex.getBindingResult().getAllErrors().forEach((error) -> {

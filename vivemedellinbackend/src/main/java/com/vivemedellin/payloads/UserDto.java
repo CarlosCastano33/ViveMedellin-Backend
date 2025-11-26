@@ -1,8 +1,11 @@
 package com.vivemedellin.payloads;
 
-import com.vivemedellin.models.Role;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.*;
+import com.vivemedellin.models.Role;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,8 +34,8 @@ public class UserDto {
             regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$",
             message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character"
     )
-        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-        private String password;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String password;
 
     @Size(min = 10, message = "About section must be at least 10 characters long")
     private String about;

@@ -2,14 +2,13 @@ package com.vivemedellin.services.impl;
 
 import com.vivemedellin.exceptions.EmailAlreadyExistsException;
 import com.vivemedellin.exceptions.ResourceNotFoundException;
-import com.vivemedellin.models.User;
 import com.vivemedellin.models.Role;
+import com.vivemedellin.models.User;
 import com.vivemedellin.payloads.UserDto;
 import com.vivemedellin.repositories.UserRepo;
 import com.vivemedellin.security.CustomUserDetailService;
 import com.vivemedellin.services.UserService;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,17 +20,20 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private CustomUserDetailService customUserDetailService;
+    private final CustomUserDetailService customUserDetailService;
 
-    @Autowired
-    private UserRepo userRepo;
+    private final UserRepo userRepo;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    private PasswordEncoder encoder;
+    private final PasswordEncoder encoder;
+
+    public UserServiceImpl(CustomUserDetailService customUserDetailService, UserRepo userRepo, ModelMapper modelMapper, PasswordEncoder encoder) {
+        this.customUserDetailService = customUserDetailService;
+        this.userRepo = userRepo;
+        this.modelMapper = modelMapper;
+        this.encoder = encoder;
+    }
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -111,6 +113,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        return customUserDetailService.loadUserByUsername(username); 
+        return customUserDetailService.loadUserByUsername(username);
     }
 }

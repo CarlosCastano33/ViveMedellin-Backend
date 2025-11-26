@@ -2,7 +2,9 @@ package com.vivemedellin.utils;
 
 
 import com.vivemedellin.models.CustomUserDetails;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -32,8 +34,7 @@ public class JwtUtil {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
 
-        if (userDetails instanceof CustomUserDetails) {
-            CustomUserDetails customUser = (CustomUserDetails) userDetails;
+        if (userDetails instanceof CustomUserDetails customUser) {
             claims.put("userId", customUser.getId());
             claims.put("role", customUser.getAuthorities().toString());
         }
@@ -57,7 +58,7 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
 
-    private Claims extractAllClaims(String token){
+    private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
@@ -73,7 +74,7 @@ public class JwtUtil {
         return extractClaim(token, Claims::getExpiration).before(new Date());
     }
 
-    private Set<String> invalidatedTokens = ConcurrentHashMap.newKeySet();
+    private final Set<String> invalidatedTokens = ConcurrentHashMap.newKeySet();
 
     public void invalidateToken(String token) {
         invalidatedTokens.add(token);

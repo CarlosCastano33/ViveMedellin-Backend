@@ -1,7 +1,7 @@
 package com.vivemedellin.filters;
 
-import com.vivemedellin.utils.JwtUtil;
 import com.vivemedellin.security.CustomUserDetailService;
+import com.vivemedellin.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

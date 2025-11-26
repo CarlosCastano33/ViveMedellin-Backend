@@ -5,8 +5,8 @@ public class ImageResponse {
     private String fileName;
     private String message;
 
-    public ImageResponse(String fileName, String message){
-        this.fileName= fileName;
+    public ImageResponse(String fileName, String message) {
+        this.fileName = fileName;
         this.message = message;
     }
 

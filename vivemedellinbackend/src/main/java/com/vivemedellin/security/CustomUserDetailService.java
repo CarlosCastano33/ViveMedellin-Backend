@@ -22,6 +22,6 @@ public class CustomUserDetailService implements UserDetailsService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email " + username, 0));
 
         return new CustomUserDetails(user);
-        
+
     }
 }

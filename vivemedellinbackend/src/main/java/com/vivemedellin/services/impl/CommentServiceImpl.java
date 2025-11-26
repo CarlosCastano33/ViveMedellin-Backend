@@ -10,7 +10,6 @@ import com.vivemedellin.repositories.PostRepo;
 import com.vivemedellin.repositories.UserRepo;
 import com.vivemedellin.services.CommentService;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -19,17 +18,20 @@ import java.util.List;
 @Service
 public class CommentServiceImpl implements CommentService {
 
-    @Autowired
-    private PostRepo postRepo;
+    private final PostRepo postRepo;
 
-    @Autowired
-    private UserRepo userRepo;
+    private final UserRepo userRepo;
 
-    @Autowired
-    private CommentRepo commentRepo;
+    private final CommentRepo commentRepo;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
+
+    public CommentServiceImpl(PostRepo postRepo, UserRepo userRepo, CommentRepo commentRepo, ModelMapper modelMapper) {
+        this.postRepo = postRepo;
+        this.userRepo = userRepo;
+        this.commentRepo = commentRepo;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public CommentDto createComment(CommentDto commentDto, Integer postId, Principal principal) {
@@ -55,10 +57,9 @@ public class CommentServiceImpl implements CommentService {
 
         List<Comment> comments = post.getComments();
 
-        List<CommentDto> commentDtos = comments.stream()
+        return comments.stream()
                 .map(comment -> this.modelMapper.map(comment, CommentDto.class))
                 .toList();
-        return commentDtos;
     }
 
 

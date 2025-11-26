@@ -11,7 +11,6 @@ import com.vivemedellin.services.PostService;
 import com.vivemedellin.services.UserService;
 import com.vivemedellin.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -31,23 +30,27 @@ import java.util.List;
 @RequestMapping("/api")
 public class PostController {
 
-    @Autowired
-    private PostService postService;
+    private final PostService postService;
 
-    @Autowired
-    private FileService fileService;
+    private final FileService fileService;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private UserRepo userRepo;
+    private final UserRepo userRepo;
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
     @Value("${project.image}")
-    private String path;
+    private final String path;
+
+    public PostController(PostService postService, FileService fileService, UserService userService, UserRepo userRepo, JwtUtil jwtUtil, String path) {
+        this.postService = postService;
+        this.fileService = fileService;
+        this.userService = userService;
+        this.userRepo = userRepo;
+        this.jwtUtil = jwtUtil;
+        this.path = path;
+    }
 
     @PostMapping("/user/{userId}/category/{categoryId}/posts")
     public ResponseEntity<PostDto> createPost(
@@ -106,7 +109,7 @@ public class PostController {
     }
 
     @GetMapping("/user/{userId}/posts")
-    public ResponseEntity<List<PostDto>> getPostsByUser(@PathVariable Integer userId){
+    public ResponseEntity<List<PostDto>> getPostsByUser(@PathVariable Integer userId) {
         List<PostDto> posts = this.postService.getPostsByUser(userId);
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
@@ -121,18 +124,18 @@ public class PostController {
     }
 
     @GetMapping("/posts/{postId}")
-    public ResponseEntity<PostDto> getPostById(@PathVariable Integer postId){
+    public ResponseEntity<PostDto> getPostById(@PathVariable Integer postId) {
         return new ResponseEntity<>(this.postService.getPostById(postId), HttpStatus.OK);
     }
 
     @DeleteMapping("/posts/{postId}")
-    public ApiResponse deletePost(@PathVariable Integer postId){
+    public ApiResponse deletePost(@PathVariable Integer postId) {
         this.postService.deletePost(postId);
         return new ApiResponse("Post is Deleted Successfully! ", true);
     }
 
     @PutMapping("/posts/{postId}")
-    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable Integer postId){
+    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable Integer postId) {
         return new ResponseEntity<>(this.postService.updatePost(postDto, postId), HttpStatus.OK);
     }
 

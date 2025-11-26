@@ -13,40 +13,56 @@ import com.vivemedellin.repositories.UserRepo;
 import com.vivemedellin.services.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
-import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
 
-    @Autowired
-    private PostRepo postRepo;
+    private final PostRepo postRepo;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    private UserRepo userRepo;
+    private final UserRepo userRepo;
 
-    @Autowired
-    private CategoryRepo categoryRepo;
+    private final CategoryRepo categoryRepo;
 
     @Value("${app.image.base-url}")
     private String imageBaseUrl;
 
+    private static final String POST_ID = "posId";
+
+    @Autowired
+    public PostServiceImpl(PostRepo postRepo, ModelMapper modelMapper, UserRepo userRepo, CategoryRepo categoryRepo) {
+        this.postRepo = postRepo;
+        this.modelMapper = modelMapper;
+        this.userRepo = userRepo;
+        this.categoryRepo = categoryRepo;
+    }
+
     private PostDto convertToDtoWithImageUrl(Post post) {
         PostDto postDto = modelMapper.map(post, PostDto.class);
-        postDto.setImageUrl(imageBaseUrl + post.getImageName());
+        String imageName = post.getImageName();
+        if (imageName == null || imageName.isEmpty()) {
+            imageName = "default.png";
+        }
+        postDto.setImageUrl((imageBaseUrl != null ? imageBaseUrl : "") + imageName);
 
-        UserResponseDto userDto = new UserResponseDto();
-        userDto.setId(post.getUser().getId());
-        userDto.setName(post.getUser().getName());
-        postDto.setUser(userDto);
+        if (post.getUser() != null) {
+            UserResponseDto userDto = new UserResponseDto();
+            userDto.setId(post.getUser().getId());
+            userDto.setName(post.getUser().getName());
+            postDto.setUser(userDto);
+        } else {
+            postDto.setUser(null);
+        }
 
         return postDto;
     }
@@ -64,7 +80,7 @@ public class PostServiceImpl implements PostService {
         if (post.getImageName() == null || post.getImageName().isEmpty()) {
             post.setImageName("default.png");
         }
-        
+
         post.setCreationDate(new Date());
         post.setUser(user);
         post.setCategory(category);
@@ -76,7 +92,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDto updatePost(PostDto postDto, Integer postId) {
         Post post = this.postRepo.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post", "postId", postId));
+                .orElseThrow(() -> new ResourceNotFoundException("Post", POST_ID, postId));
 
         post.setPostTitle(postDto.getPostTitle());
         post.setContent(postDto.getContent());
@@ -88,7 +104,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void deletePost(Integer postId) {
         Post post = this.postRepo.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post", "postId", postId));
+                .orElseThrow(() -> new ResourceNotFoundException("Post", POST_ID, postId));
         this.postRepo.delete(post);
     }
 
@@ -102,7 +118,7 @@ public class PostServiceImpl implements PostService {
 
         List<PostDto> postDtos = posts.stream()
                 .map(this::convertToDtoWithImageUrl)
-                .collect(Collectors.toList());
+                .toList();
 
         PostResponse postResponse = new PostResponse();
         postResponse.setContent(postDtos);
@@ -118,7 +134,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDto getPostById(Integer postId) {
         Post post = this.postRepo.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post", "postId", postId));
+                .orElseThrow(() -> new ResourceNotFoundException("Post", POST_ID, postId));
         return convertToDtoWithImageUrl(post);
     }
 
@@ -135,7 +151,7 @@ public class PostServiceImpl implements PostService {
 
         List<PostDto> postDtos = posts.stream()
                 .map(this::convertToDtoWithImageUrl)
-                .collect(Collectors.toList());
+                .toList();
 
         PostResponse postResponse = new PostResponse();
         postResponse.setContent(postDtos);
@@ -156,16 +172,16 @@ public class PostServiceImpl implements PostService {
 
         return posts.stream()
                 .map(this::convertToDtoWithImageUrl)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public Page<PostDto> searchPost(String keyword, int pageNumber, int pageSize) {
-        if (keyword == null || keyword.trim().isEmpty()) {
-            throw new IllegalArgumentException("Keyword must not be empty");
-        }
-
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("creationDate").descending());
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return Page.empty(pageable);
+        }
 
         Page<Post> postPage = postRepo.findByPostTitleContainingIgnoreCaseOrContentContainingIgnoreCase(
                 keyword.trim(), keyword.trim(), pageable

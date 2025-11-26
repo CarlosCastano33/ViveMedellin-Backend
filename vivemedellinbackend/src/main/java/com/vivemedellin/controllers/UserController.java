@@ -4,11 +4,10 @@ import com.vivemedellin.payloads.ApiResponse;
 import com.vivemedellin.payloads.JwtAuthResponse;
 import com.vivemedellin.payloads.LoginRequest;
 import com.vivemedellin.payloads.UserDto;
-import com.vivemedellin.utils.JwtUtil;
 import com.vivemedellin.services.UserService;
+import com.vivemedellin.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,14 +23,17 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
+
+    public UserController(UserService userService, AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+    }
 
     @PostMapping("/register")
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {

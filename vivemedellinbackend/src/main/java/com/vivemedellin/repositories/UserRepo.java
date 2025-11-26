@@ -1,7 +1,7 @@
 package com.vivemedellin.repositories;
 
+import com.vivemedellin.models.Role;
 import com.vivemedellin.models.User;
-import com.vivemedellin.models.Role; 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

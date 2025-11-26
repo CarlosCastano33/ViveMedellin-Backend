@@ -9,14 +9,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class    ApiResponse {
-    private String message;
-    private boolean success;
+public class ApiResponse {
+    private final String message;
+    private final boolean success;
     private String token;
 
-    public ApiResponse(String message, boolean status){
+    public ApiResponse(String message, boolean status) {
         this.message = message;
-        this.success= status;
+        this.success = status;
     }
 
 }
